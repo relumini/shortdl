@@ -50,6 +50,7 @@ func InitRoute(router *gin.Engine) {
 			errStr := fmt.Sprintf("%v", err)
 			ctx.JSON(http.StatusNotFound, gin.H{
 				"message": errStr,
+				"data":    metadata.Checksum,
 			})
 			return
 		}
