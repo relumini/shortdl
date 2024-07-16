@@ -21,6 +21,7 @@ type Metadata struct {
 	Caption     youtube.CaptionTrack
 	Title       string
 	Transcript  string
+	Checksum    string
 }
 
 func GetYoutubeShort(idv string) (Metadata, error) {
@@ -31,13 +32,13 @@ func GetYoutubeShort(idv string) (Metadata, error) {
 
 	videoChan := make(chan *youtube.Video)
 	errChan := make(chan error)
-
+	transcriptChan := make(chan string)
+	wg.Add(2)
 	// Get video metadata
 	go func() {
 		defer close(videoChan)
 		defer close(errChan)
 		vid, err := client.GetVideo(idv)
-		fmt.Print(err)
 		if err != nil {
 
 			errChan <- errors.New("cannot get video")
@@ -53,7 +54,6 @@ func GetYoutubeShort(idv string) (Metadata, error) {
 	format := vid.Formats.WithAudioChannels()
 	sfile := "download/" + utils.ComputeChecksum(strings.ReplaceAll(vid.Title, " ", "_")) + ".mp4"
 
-	wg.Add(2)
 	if vid.CaptionTracks == nil {
 		return Metadata{}, errors.New(string(handler_error.ErrSensitiveContent))
 	}
@@ -62,36 +62,45 @@ func GetYoutubeShort(idv string) (Metadata, error) {
 		defer wg.Done()
 		transcript, err := client.GetTranscript(vid, vid.CaptionTracks[0].LanguageCode)
 		if err != nil {
-			msgerr = "cannot get transcript\n"
+			errChan <- errors.New("cannot get transcript")
 			return
 		}
 		transcript_fil := regexp.MustCompile(`\d{1,2}:\d{2}\s*-\s*`).ReplaceAllString(transcript.String(), "")
-		metadata.Transcript = transcript_fil
+		transcriptChan <- transcript_fil
 	}()
-	if msgerr != "" {
+	transcript, err := <-transcriptChan, <-errChan
+	metadata.Transcript = transcript
+	if err != nil {
 		return Metadata{}, errors.New(msgerr)
 	}
+	fmt.Print(metadata.Transcript)
 	checkSum := utils.ComputeChecksum(metadata.Transcript)
 
-	var existingChecksum models.ChecksumData
-	if err := database.DB.Where("checksum_value = ?", checkSum).First(&existingChecksum).Error; err == nil {
+	// var existingChecksum models.ChecksumData
+	result, err := utils.GetMetadata(database.DB, checkSum)
+	// fmt.Print(&result.RowsAffected)
+
+	fmt.Print(result)
+	if err == nil {
+		// Jika checksum ditemukan, kembalikan pesan bahwa video sudah diunduh
 		msg := "already downloaded the video"
+		return Metadata{Checksum: result.ChecksumValue}, errors.New(msg)
+	} else {
+		newChecksum := models.ChecksumData{ChecksumValue: checkSum}
+		if err := database.DB.Create(&newChecksum).Error; err != nil {
+			msg := "duplicated video"
 
-		return Metadata{}, errors.New(msg)
-		// if errors.Is(err, gorm.ErrRecordNotFound) {
-		// 	return Metadata{}, err
-		// }
-		// if err != nil {
-
-		// }
+			return Metadata{}, errors.New(msg)
+		}
+		// Jika checksum tidak ditemukan, lanjutkan untuk menambahkan checksum baru
 	}
 
-	newChecksum := models.ChecksumData{ChecksumValue: checkSum}
-	if err := database.DB.Create(&newChecksum).Error; err != nil {
-		msg := "duplicated video"
+	// newChecksum := models.ChecksumData{ChecksumValue: checkSum}
+	// if err := database.DB.Create(&newChecksum).Error; err != nil {
+	// 	msg := "duplicated video"
 
-		return Metadata{}, errors.New(msg)
-	}
+	// 	return Metadata{}, errors.New(msg)
+	// }
 
 	go func() {
 		defer wg.Done()
@@ -120,7 +129,7 @@ func GetYoutubeShort(idv string) (Metadata, error) {
 	metadata.Description = vid.Description
 	metadata.Caption = vid.CaptionTracks[0]
 	metadata.Title = vid.Title
-
+	metadata.Checksum = checkSum
 	// Wait for all goroutines to finish
 	wg.Wait()
 
