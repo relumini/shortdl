@@ -49,6 +49,16 @@ class DownloadShortStub(object):
                 request_serializer=multi__pb2.ParamsRequest.SerializeToString,
                 response_deserializer=multi__pb2.ReturnsReply.FromString,
                 _registered_method=True)
+        self.InfoTiktok = channel.unary_unary(
+                '/downloadshort.DownloadShort/InfoTiktok',
+                request_serializer=multi__pb2.ParamsRequest.SerializeToString,
+                response_deserializer=multi__pb2.ReturnsReply.FromString,
+                _registered_method=True)
+        self.DownTiktokAlt = channel.unary_unary(
+                '/downloadshort.DownloadShort/DownTiktokAlt',
+                request_serializer=multi__pb2.ParamsRequest.SerializeToString,
+                response_deserializer=multi__pb2.ReturnsReply.FromString,
+                _registered_method=True)
 
 
 class DownloadShortServicer(object):
@@ -66,6 +76,18 @@ class DownloadShortServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def InfoTiktok(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DownTiktokAlt(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_DownloadShortServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -76,6 +98,16 @@ def add_DownloadShortServicer_to_server(servicer, server):
             ),
             'DownYoutube': grpc.unary_unary_rpc_method_handler(
                     servicer.DownYoutube,
+                    request_deserializer=multi__pb2.ParamsRequest.FromString,
+                    response_serializer=multi__pb2.ReturnsReply.SerializeToString,
+            ),
+            'InfoTiktok': grpc.unary_unary_rpc_method_handler(
+                    servicer.InfoTiktok,
+                    request_deserializer=multi__pb2.ParamsRequest.FromString,
+                    response_serializer=multi__pb2.ReturnsReply.SerializeToString,
+            ),
+            'DownTiktokAlt': grpc.unary_unary_rpc_method_handler(
+                    servicer.DownTiktokAlt,
                     request_deserializer=multi__pb2.ParamsRequest.FromString,
                     response_serializer=multi__pb2.ReturnsReply.SerializeToString,
             ),
@@ -132,6 +164,60 @@ class DownloadShort(object):
             request,
             target,
             '/downloadshort.DownloadShort/DownYoutube',
+            multi__pb2.ParamsRequest.SerializeToString,
+            multi__pb2.ReturnsReply.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def InfoTiktok(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/downloadshort.DownloadShort/InfoTiktok',
+            multi__pb2.ParamsRequest.SerializeToString,
+            multi__pb2.ReturnsReply.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DownTiktokAlt(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/downloadshort.DownloadShort/DownTiktokAlt',
             multi__pb2.ParamsRequest.SerializeToString,
             multi__pb2.ReturnsReply.FromString,
             options,

@@ -6,7 +6,8 @@ option go_package = ".";
 service DownloadShort {
   rpc DownTiktok (ParamsRequest) returns (ReturnsReply) {}
   rpc DownYoutube (ParamsRequest) returns (ReturnsReply) {}
-
+  rpc InfoTiktok (ParamsRequest) returns (ReturnsReply) {}
+  rpc DownTiktokAlt (ParamsRequest) returns (ReturnsReply) {}
 }
 
 message ParamsRequest {

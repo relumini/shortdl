@@ -172,7 +172,6 @@ class Video:
                     output.write(video_bytes)
         """
 
-        raise NotImplementedError
         i, session = self.parent._get_session(**kwargs)
         downloadAddr = self.as_dict["video"]["downloadAddr"]
 
