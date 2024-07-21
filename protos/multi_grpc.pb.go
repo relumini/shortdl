@@ -19,8 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	DownloadShort_DownTiktok_FullMethodName  = "/downloadshort.DownloadShort/DownTiktok"
-	DownloadShort_DownYoutube_FullMethodName = "/downloadshort.DownloadShort/DownYoutube"
+	DownloadShort_DownTiktok_FullMethodName    = "/downloadshort.DownloadShort/DownTiktok"
+	DownloadShort_DownYoutube_FullMethodName   = "/downloadshort.DownloadShort/DownYoutube"
+	DownloadShort_InfoTiktok_FullMethodName    = "/downloadshort.DownloadShort/InfoTiktok"
+	DownloadShort_DownTiktokAlt_FullMethodName = "/downloadshort.DownloadShort/DownTiktokAlt"
 )
 
 // DownloadShortClient is the client API for DownloadShort service.
@@ -29,6 +31,8 @@ const (
 type DownloadShortClient interface {
 	DownTiktok(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ReturnsReply, error)
 	DownYoutube(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ReturnsReply, error)
+	InfoTiktok(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ReturnsReply, error)
+	DownTiktokAlt(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ReturnsReply, error)
 }
 
 type downloadShortClient struct {
@@ -59,12 +63,34 @@ func (c *downloadShortClient) DownYoutube(ctx context.Context, in *ParamsRequest
 	return out, nil
 }
 
+func (c *downloadShortClient) InfoTiktok(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ReturnsReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReturnsReply)
+	err := c.cc.Invoke(ctx, DownloadShort_InfoTiktok_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *downloadShortClient) DownTiktokAlt(ctx context.Context, in *ParamsRequest, opts ...grpc.CallOption) (*ReturnsReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReturnsReply)
+	err := c.cc.Invoke(ctx, DownloadShort_DownTiktokAlt_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DownloadShortServer is the server API for DownloadShort service.
 // All implementations must embed UnimplementedDownloadShortServer
 // for forward compatibility
 type DownloadShortServer interface {
 	DownTiktok(context.Context, *ParamsRequest) (*ReturnsReply, error)
 	DownYoutube(context.Context, *ParamsRequest) (*ReturnsReply, error)
+	InfoTiktok(context.Context, *ParamsRequest) (*ReturnsReply, error)
+	DownTiktokAlt(context.Context, *ParamsRequest) (*ReturnsReply, error)
 	mustEmbedUnimplementedDownloadShortServer()
 }
 
@@ -77,6 +103,12 @@ func (UnimplementedDownloadShortServer) DownTiktok(context.Context, *ParamsReque
 }
 func (UnimplementedDownloadShortServer) DownYoutube(context.Context, *ParamsRequest) (*ReturnsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DownYoutube not implemented")
+}
+func (UnimplementedDownloadShortServer) InfoTiktok(context.Context, *ParamsRequest) (*ReturnsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InfoTiktok not implemented")
+}
+func (UnimplementedDownloadShortServer) DownTiktokAlt(context.Context, *ParamsRequest) (*ReturnsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DownTiktokAlt not implemented")
 }
 func (UnimplementedDownloadShortServer) mustEmbedUnimplementedDownloadShortServer() {}
 
@@ -127,6 +159,42 @@ func _DownloadShort_DownYoutube_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DownloadShort_InfoTiktok_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ParamsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DownloadShortServer).InfoTiktok(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DownloadShort_InfoTiktok_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DownloadShortServer).InfoTiktok(ctx, req.(*ParamsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DownloadShort_DownTiktokAlt_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ParamsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DownloadShortServer).DownTiktokAlt(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DownloadShort_DownTiktokAlt_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DownloadShortServer).DownTiktokAlt(ctx, req.(*ParamsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DownloadShort_ServiceDesc is the grpc.ServiceDesc for DownloadShort service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -141,6 +209,14 @@ var DownloadShort_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DownYoutube",
 			Handler:    _DownloadShort_DownYoutube_Handler,
+		},
+		{
+			MethodName: "InfoTiktok",
+			Handler:    _DownloadShort_InfoTiktok_Handler,
+		},
+		{
+			MethodName: "DownTiktokAlt",
+			Handler:    _DownloadShort_DownTiktokAlt_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
